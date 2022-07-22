@@ -1,0 +1,4 @@
+mamao 2 fruta
+pera 3 fruta
+abacaxi 4 fruta
+uva 3000 fruta 
