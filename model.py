@@ -24,19 +24,17 @@ class Funcionario(Pessoa):
         super(Funcionario, self).__init__(nome, cpf, endereco, telefone)
 
 
-class Produto:
-    def __init__(self,nome, preco, categoria):
-        self.nome = nome
-        self.preco = preco
-        self.categoria = categoria
-       
-        
-        
 class Categoria:
     def __init__(self, categoria):
         self.categoria = categoria
         
         
+class Produto(Categoria):
+    def __init__(self,nome, preco, categoria):
+        self.nome = nome
+        self.preco = preco
+        super(Produto, self).__init__(categoria)
+          
         
 class Estoque:
     def __init__(self, produto: Produto, quantidade):

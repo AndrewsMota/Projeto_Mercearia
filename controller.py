@@ -1,188 +1,67 @@
-import time
-from dal import *
 from model import *
+import os.path  
 
+class ProdutoDao:
+    @classmethod
+    def salvar(cls, produto: Produto):
 
-
-while True:
-
-    print('''
-
-    ===========================   
-    |    Menu Principal       |
-    |                         |
-    |    (1) Cadastro         |
-    |    (2) Alteração        |
-    |    (3) Remoção          |
-    |    (4) Caixa            |
-    |    (5) Relatório        |
-    |    (9) Sair             |
-    |                         |
-    ===========================
-    ''')
-
-    menu = int(input("Selecione uma opção acima: "))
-    
-    if menu == 1:
-        while True:
-            print('''
-
-    ===========================   
-    |    Menu Cadastro        |
-    |                         |
-    |    (1) Produto          |
-    |    (2) Fornecedor       |
-    |    (3) Cliente          |
-    |    (4) Funcionario      |
-    |    (5) Sair             |
-    |                         |
-    ===========================
-    ''')
-    
-            menuCadastro = int(input("Selecione uma opção acima: "))
-            
-            if menuCadastro == 1:
-                while True:
-                    nome = str(input("Nome do produto: ")).lower()
-                    preco = str(input("Preço do produto: "))
-                    categoria = str(input("Categoria do produto: ")).lower()
-                    
-                    print((f"{nome}\n{preco}\n{categoria}"))
-                    
-
-                    confirmar = input("As informações acima estão corretas ? S/N ").lower()
-                    if confirmar == "n":
-                        print('Insira as informações novamente')
-                    elif confirmar == "s":
-                        break
-                    
-                produto = Produto(nome, preco, categoria)
+        if os.path.exists('produtos.txt'):
+            with open('produtos.txt', 'r') as arquivo:
+                for line in arquivo:
+                    for word in line.split():
+                        if str(produto.nome) == word:
+                            print(f'O produto {produto.nome}  já consta em nosso sistema ')
+                            return   
                 
-                ProdutoDal.salvar(produto)
-                print(f' {nome} cadastrado com sucesso! ')
-                time.sleep(2)
-                    
-                    
+        with open('produtos.txt', 'a') as arquivo:           
+            arquivo.write(produto.nome + " " + str(produto.preco) + " " + (produto.categoria)+ " \n" )
             
-            elif menuCadastro == 2:
-                pass
-            
-            elif menuCadastro == 3:
-                pass
-            
-            elif menuCadastro == 4:
-                pass
-            
-            elif menuCadastro == 5:
-                break
-            
-            else:
-                print('Informe uma opção válida ')
-                time.sleep(2)
-    
-    elif menu == 2:
-        while True:
-            print('''
 
-    ===========================   
-    |    Menu Alteração       |
-    |                         |
-    |    (1) Produto          |
-    |    (2) Fornecedor       |
-    |    (3) Cliente          |
-    |    (4) Funcionario      |
-    |    (5) Sair             |
-    |                         |
-    ===========================
-    ''')
-    
-            menuAlteracao = int(input("Selecione uma opção acima: "))
-            
-            if menuAlteracao == 1:
-                nome = str(input('Insira o nome do produto a ser alterado: ')).lower
-                nome_produto = str(input('\nInsira a alteração do nome: ')).lower
-                preco = str(input('Insira a alteração do preço: '))
-                categoria = str(input('Insira a alteração da categotria: ')).lower
                 
-                confirmar = input(f"Tem certeza que deseja alterar {nome}? S/N ").lower()
-                
-                if confirmar == 's':
-                    produto = Produto(nome_produto, preco, categoria)
-                    ProdutoDal.alterar(nome, produto)
-                    print((f" {nome} Alterado para {nome_produto}"))   
+                        
+    @classmethod        
+    def alterar(cls, produto, novo_produto):
+        with open('produtos.txt', 'r') as arquivo:
+            lista_condicao = arquivo.read().split(" ")
             
-            elif menuAlteracao == 2:
-                pass
+            if produto not in lista_condicao:
+                return(print(f"{produto} não consta na base de dados"))
             
-            elif menuAlteracao == 3:
-                pass
-            
-            elif menuAlteracao == 4:
-                pass
-            
-            elif menuAlteracao == 5:
-                break
-            
-            else:
-                print('Informe uma opção válida ')
-                time.sleep(2)
-    
-    elif menu == 3:
-        while True:
-            print('''
-
-    ===========================   
-    |    Menu Remoção         |
-    |                         |
-    |    (1) Produto          |
-    |    (2) Fornecedor       |
-    |    (3) Cliente          |
-    |    (4) Funcionario      |
-    |    (5) Sair             |
-    |                         |
-    ===========================
-    ''')
-    
-            menuRemocao = int(input("Selecione uma opção acima: "))
-            
-            if menuRemocao == 1:
-                nome = str(input('Insira o nome do produto: '))
-                
-                confirmar = input(f"Tem certeza que deseja remover {nome}? S/N").lower()
-                
-                if confirmar == 's':
-                    ProdutoDal.remover(nome)
-                    print((f" {nome} removido com sucesso! "))    
-
-            
-            elif menuRemocao == 2:
-                pass
-            
-            elif menuRemocao == 3:
-                pass
-            
-            elif menuRemocao == 4:
-                pass
-            
-            elif menuRemocao == 5:
-                break
-            
-            else:
-                print('Informe uma opção válida ')
-                time.sleep(2)
-    
-    elif menu == 4:
-        pass
-    
-    elif menu == 5:
-        pass
-    
-    elif menu == 6:
-        break
-       
-    else:
-        print('Informe uma opção válida !')
-        time.sleep(2)
         
-    
+        ProdutoDao.remover(produto)
+        ProdutoDao.salvar(novo_produto)
+        
+    @classmethod
+    def remover(cls, produto):
+        data = ""
+        
+        with open('produtos.txt', 'r') as arquivo:
+            lista_produto = arquivo.read().splitlines()
+            
+            for line in lista_produto:
+                if produto not in line:
+                    data += line + "\n"                    
+        
+        with open('produtos.txt', 'w') as arquivo:
+            arquivo.write(data)
+                     
+        
+
+class FornecedorDao:
+    @classmethod
+    def salvar(cls, fornecedor: Fornecedor):
+        with open('fornecedor.txt', 'w') as arquivo:
+            arquivo.write(fornecedor.categoria + " " + fornecedor.cnpj + " " + fornecedor.nome + " " + fornecedor.telefone)
+
+class ClienteDao:
+    @classmethod
+    def salvar(cls, cliente: Cliente):
+        with open('cliente.txt', 'w') as arquivo:
+            arquivo.write(cliente.cpf + " " + cliente.email + " " + cliente.nome + " " + cliente.telefone)
+            
+class FuncionarioDao:
+    @classmethod
+    def salvar(cls, funcionario: Funcionario):
+        with open('funcionario.txt', 'w') as arquivo:
+            arquivo.write(funcionario.clt + " " + funcionario.cpf + " " + funcionario.email + " " + funcionario.endereco + " " + funcionario.idade + " " + funcionario.nome + " " + funcionario.telefone)
 
